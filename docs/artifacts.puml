@@ -1,0 +1,22 @@
+[user-program] as user
+
+[ko-check] as kc
+[ko-check-api] as api
+[ko-check-assertion] as ast
+[ko-check-engine] as eng
+[junit-platform-engine] as jen
+[opentest4j] as open
+
+user --> kc : implementation
+
+kc -> ast : api
+kc --> api : api
+kc --> eng : implementation
+
+ast --> api : implementation
+
+api --> open : implementation
+
+eng -> api : implementation
+eng --> jen : implementation
+eng --> open : implementation
