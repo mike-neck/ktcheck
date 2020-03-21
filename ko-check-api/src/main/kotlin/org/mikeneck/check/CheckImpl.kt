@@ -20,6 +20,7 @@ class CheckImpl<C : Any, G : Any, W>(
   private fun Throwable.toCheckResult(start: Instant): CheckResult = when(this) {
     is Unsuccessful.ByUnhandledException -> CheckResult.error(checkDescription, Timer(start, clock), this)
     is Unsuccessful.ByAbortion -> CheckResult.skip(checkDescription, Timer(start, clock), this)
+    is Unsuccessful.BySkip -> CheckResult.skip(checkDescription, Timer(start, clock), this)
     else -> CheckResult.error(checkDescription, Timer(start, clock), unhandledException("unknown", this))
   }
 
