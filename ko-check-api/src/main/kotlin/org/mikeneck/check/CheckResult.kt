@@ -19,9 +19,9 @@ sealed class CheckResult(
   @Suppress("MemberVisibilityCanBePrivate")
   val name: String = checkDescription.name
 
-  val success: Boolean get() = unsuccessful != null
+  val success: Boolean get() = unsuccessful == null
 
-  override fun toString(): String = "CheckResult[$name=$result]"
+  override fun toString(): String = "CheckResult[($name)=$result]"
 
   companion object {
 

@@ -24,6 +24,9 @@ dependencies {
   implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
   val openTest4jVersion: String by project
   implementation("org.opentest4j:opentest4j:$openTest4jVersion")
+
+  val junitVersion: String by project
+  testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
 }
 
 tasks.withType<Test> {

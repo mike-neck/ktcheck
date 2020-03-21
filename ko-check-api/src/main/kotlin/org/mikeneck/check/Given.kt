@@ -7,6 +7,11 @@ class Given<C: Any, G: Any>(
     private val action: C.() -> G
 ): Test {
 
+  companion object {
+    operator fun <G: Any> invoke(description: String, action: () -> G): Given<Unit, G> =
+        Given(description, { Unit }, { Unit }, { action() })
+  }
+
   private val list: MutableList<Check> = mutableListOf()
 
   override val all: Iterable<Check> get() = list.toMutableSet()
