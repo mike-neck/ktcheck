@@ -21,7 +21,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
-          key: gradle-${{ hashFiles('**/*.gradle') }}-${{ hashFiles('**/gradle-wrapper.properties') }}
+          key: gradle-${{ hashFiles('ko-check-api/build.gradle.kts') }}-${{ hashFiles('**/gradle-wrapper.properties') }}
           restore-keys: gradle-
 
       - name: Run API Tests
