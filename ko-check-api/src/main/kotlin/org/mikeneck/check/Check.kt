@@ -1,5 +1,7 @@
 package org.mikeneck.check
 
+import java.time.Duration
+
 /**
  * Represents each test execution.
  */
@@ -35,6 +37,8 @@ interface CheckDescription {
 interface CheckContext {
 
   val timer: Timer
+
+  fun executionTime(): Duration = timer.stop()
 
   val given: Any
 

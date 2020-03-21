@@ -4,16 +4,20 @@ import java.time.Duration
 
 sealed class CheckResult(
     checkDescription: CheckDescription,
-    checkContext: CheckContext,
+    val executionTime: Duration,
     @Suppress("MemberVisibilityCanBePrivate")
     val unsuccessful: Unsuccessful?,
     private val result: String
 ) {
 
+  constructor(checkDescription: CheckDescription, checkContext: CheckContext, unsuccessful: Unsuccessful?, result: String):
+      this(checkDescription, checkContext.executionTime(), unsuccessful, result)
+
+  constructor(checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful, result: String):
+      this(checkDescription, timer.stop(), unsuccessful, result)
+
   @Suppress("MemberVisibilityCanBePrivate")
   val name: String = checkDescription.name
-
-  val executionTime: Duration = checkContext.timer.stop()
 
   val success: Boolean get() = unsuccessful != null
 
@@ -27,6 +31,14 @@ sealed class CheckResult(
     fun failure(
         checkDescription: CheckDescription, checkContext: CheckContext, unsuccessful: Unsuccessful): CheckResult =
         Failure(checkDescription, checkContext, unsuccessful)
+
+    fun error(
+        checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful): CheckResult =
+        Error(checkDescription, timer, unsuccessful)
+
+    fun skip(
+        checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful): CheckResult =
+        Skip(checkDescription, timer, unsuccessful)
   }
 
   class Success(
@@ -35,5 +47,13 @@ sealed class CheckResult(
 
   class Failure(
       checkDescription: CheckDescription, checkContext: CheckContext, unsuccessful: Unsuccessful
-  ) : CheckResult(checkDescription, checkContext, unsuccessful, "SUCCESS")
+  ) : CheckResult(checkDescription, checkContext, unsuccessful, "FAILURE")
+
+  class Error(
+      checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful
+  ) : CheckResult(checkDescription, timer, unsuccessful, "ERROR")
+
+  class Skip(
+      checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful
+  ) : CheckResult(checkDescription, timer, unsuccessful, "SKIPPED")
 }

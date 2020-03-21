@@ -21,14 +21,7 @@ internal class ThrowableOnLeft<T: Any>(
 
   fun <N: Any> map(mapping: (T) -> N): ThrowableOnLeft<N> = ThrowableOnLeft(either.map(mapping), this.throwable)
 
-  fun <N: Any> flatMap(
-      throwable: (String, Throwable) -> Throwable = this.throwable,
-      mapping: (T) -> Either<Throwable, N>
-  ): ThrowableOnLeft<N> = 
-      either.flatMap(mapping).errorMap { throwable("flatMap", it) }
-          .let { ThrowableOnLeft(it, throwable) }
-
-  fun <N: Any> invoke(
+  operator fun <N: Any> invoke(
       description: String,
       throwable: (String, Throwable) -> Throwable = this.throwable,
       mapping: (T) -> N
@@ -40,4 +33,6 @@ internal class ThrowableOnLeft<T: Any>(
             Either.left(throwable(description, e.throwOnOutOfMemoryError())), 
             throwable)
       }
+
+  fun rescue(mapping: (Throwable) -> T): T = either.rescue(mapping)
 }
