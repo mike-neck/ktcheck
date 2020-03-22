@@ -12,4 +12,7 @@ operator fun <T: Any, R: Any> Either<Throwable, T>.invoke(actionName: String, ac
       }
     }
 
+operator fun <T: Any, R: Any> Either<Throwable, T>.invoke(
+    action: (T) -> Either<Throwable, R>): Either<Throwable, R> = this.flatMap(action)
+
 fun <T: Any> Either<Throwable, T>.throwOnLeft(): T = this.rescue { throw it }

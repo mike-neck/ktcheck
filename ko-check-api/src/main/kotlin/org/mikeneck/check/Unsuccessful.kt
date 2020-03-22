@@ -9,7 +9,9 @@ import org.opentest4j.TestSkippedException
  */
 sealed class Unsuccessful(val tags: Iterable<String>, open val original: Throwable): RuntimeException(original) {
 
-  class BySkip(tags: Iterable<String>, override val original: TestSkippedException): Unsuccessful(tags, original)
+  class BySkip(tags: Iterable<String>, override val original: TestSkippedException): Unsuccessful(tags, original) {
+    override fun toString(): String = "Skipped [${tags.joinToString(", ")}] - ${original.message}"
+  }
 
   class ByAbortion(tags: Iterable<String>, override val original: TestAbortedException): Unsuccessful(tags, original)
 
