@@ -10,7 +10,7 @@ class GivenTest {
   fun success(): Unit =
       Given("1") { 1 }
           .When(" + 4") { one -> one + 4 }
-          .Then(" = 5") { _, actual -> if (actual == 5) Assertion.success() else Assertion.fail(5, actual) }
+          .Then(" -> [bar, baz, qux]", expect(5))
           .performAll()
           .results allSatisfies { "$it / ${it.unsuccessful}" to it.success }
 
@@ -18,10 +18,8 @@ class GivenTest {
   fun failure(): Unit =
       Given("[foo, bar, baz, qux, quux]") { listOf("foo", "bar", "baz", "qux", "quux") }
           .When("take from index 1 with 3 count") { it.subList(1, 3) }
-          .Then(" -> [bar, baz, qux]") { _, actual ->
-            if (actual == listOf("bar", "baz", "qux")) Assertion.success() 
-            else Assertion.fail(listOf("bar", "baz", "qux"), actual) 
-          }.performAll()
+          .Then(" -> [bar, baz, qux]", expect(listOf("bar", "baz", "qux")))
+          .performAll()
           .success shouldBe false
 
   @Test
