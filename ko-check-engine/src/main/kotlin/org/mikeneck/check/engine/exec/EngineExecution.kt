@@ -11,7 +11,7 @@ import java.util.*
 
 class EngineExecution(
     private val rootUniqueId: UniqueId,
-    private val allTests: Iterable<Test>
+    internal val allTests: Iterable<Test>
 ): Execution {
 
   override fun execute(listener: ExecutionListener) = children().forEach { it.execute(listener) }

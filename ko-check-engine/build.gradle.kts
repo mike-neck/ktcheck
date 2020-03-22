@@ -24,6 +24,9 @@ dependencies {
   implementation("org.junit.platform:junit-platform-engine:$junitEngineVersion")
   implementation("org.opentest4j:opentest4j:$openTest4jVersion")
   implementation("io.github.classgraph:classgraph:4.8.65")
+
+  val junitVersion: String by project
+  testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
 }
 
 tasks.withType<Test> {
