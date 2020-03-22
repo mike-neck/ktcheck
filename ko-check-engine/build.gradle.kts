@@ -19,11 +19,11 @@ dependencies {
   val kotlinVersion: String by project
   implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
   implementation(project(":ko-check-api"))
-
   val junitEngineVersion: String by project
   val openTest4jVersion: String by project
   implementation("org.junit.platform:junit-platform-engine:$junitEngineVersion")
   implementation("org.opentest4j:opentest4j:$openTest4jVersion")
+  implementation("io.github.classgraph:classgraph:4.8.65")
 }
 
 tasks.withType<Test> {

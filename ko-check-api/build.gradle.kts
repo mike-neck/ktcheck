@@ -1,3 +1,4 @@
+import java.nio.file.Files
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -37,5 +38,26 @@ tasks.withType<KotlinCompile> {
   kotlinOptions {
     freeCompilerArgs = listOf("-Xjsr305=strict")
     jvmTarget = "1.8"
+  }
+}
+
+task("list") {
+  val kotlinCompile = tasks.getByPath("compileKotlin") as KotlinCompile
+  dependsOn(kotlinCompile)
+
+  val path = kotlinCompile.destinationDir.toPath()
+  val out = path.resolve("ko-check-api-excludes.txt")
+
+  outputs.file(out)
+
+  doLast {
+    val files = project.fileTree(kotlinCompile.destinationDir).files
+        .asSequence()
+        .filter { !it.name.contains("kotlin_module") }
+        .filter { !it.name.matches(Regex(".+\\$[0-9]+\\.class$")) }
+        .map { path.relativize(it.toPath()).toString() }
+        .map { it.replace(".class", "") }
+        .map { it.replace("/", ".") }
+    Files.write(out, files.toMutableList(), Charsets.UTF_8)
   }
 }
