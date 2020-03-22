@@ -34,4 +34,17 @@ sealed class Unsuccessful(val tags: Iterable<String>, open val original: Throwab
           |then $thenDescription
         """.trimMargin()
   }
+
+  class CompositeException(private val exceptions: Iterable<Unsuccessful>): RuntimeException() {
+    override val message: String? get() = """|
+      |composite exception:
+      |  ${exceptions.map { 
+      when (it) {
+        is BySkip -> "${it.tags.joinToString(", ")} - skipped"
+        is ByAbortion -> "${it.tags.joinToString(", ")} - skipped(aborted)"
+        is ByUnhandledException -> "${it.tags.joinToString(", ")} - error: ${it.original}"
+        is ByAssertionFailure -> "${it.tags.joinToString(", ")} - failed - expected: ${it.original.expected.stringRepresentation}/ actual : ${it.original.actual.stringRepresentation}"
+      } }.joinToString("\n  ")}
+    """.trimMargin()
+  }
 }

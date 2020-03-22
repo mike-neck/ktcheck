@@ -14,4 +14,9 @@ interface Test {
    * Performs all checks.
    */
   fun performAll(): TestResult = TestResult(all.map { it.perform() })
+
+  /**
+   * Run all checks in standalone environment.
+   */
+  fun runStandalone(): Unit = performAll().throwOnAnyFailure()
 }

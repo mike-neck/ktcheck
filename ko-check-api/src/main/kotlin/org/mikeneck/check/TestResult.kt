@@ -12,4 +12,8 @@ data class TestResult(
   fun successTests(): Iterable<CheckResult> = results.filter { it.success }
 
   fun failedTests(): Iterable<CheckResult> = results.filter { it.success.not() }
+
+  fun throwOnAnyFailure() =
+      if (success) Unit
+      else throw Unsuccessful.CompositeException(failedTests().map { it.unsuccessful!! })
 }
