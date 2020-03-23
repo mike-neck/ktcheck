@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.nio.file.Files
 
 plugins {
   kotlin("jvm") version "1.3.70"
@@ -37,5 +38,24 @@ tasks.withType<KotlinCompile> {
   kotlinOptions {
     freeCompilerArgs = listOf("-Xjsr305=strict")
     jvmTarget = "11"
+  }
+  if (name == "compileKotlin") {
+    finalizedBy("serviceLoaderDescription")
+  }
+}
+
+task("serviceLoaderDescription") {
+  val kotlinCompile = tasks.getByPath("compileKotlin") as KotlinCompile
+  dependsOn(kotlinCompile)
+
+  val dir = kotlinCompile.destinationDir
+  val path = dir.toPath().resolve("META-INF/services/org.junit.platform.engine.TestEngine")
+  outputs.file(path)
+
+  doLast { 
+    if (!Files.exists(path.parent)) {
+      Files.createDirectories(path.parent)
+    }
+    Files.write(path, "org.mikeneck.check.engine.KoCheckEngine".toByteArray())
   }
 }
