@@ -39,9 +39,12 @@ tasks.withType<KotlinCompile> {
     freeCompilerArgs = listOf("-Xjsr305=strict")
     jvmTarget = "1.8"
   }
+  if (name == "compileKotlin") {
+    finalizedBy("listExcludeClasses")
+  }
 }
 
-task("list") {
+task("listExcludeClasses") {
   val kotlinCompile = tasks.getByPath("compileKotlin") as KotlinCompile
   dependsOn(kotlinCompile)
 
