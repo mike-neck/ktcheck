@@ -37,7 +37,7 @@ class Given<C: Any, G: Any>(
         this@Given
             .apply { this@Given.list.add(CheckImpl(
                 object : CheckDescription {
-                  override val id: String get() = "${this@Given.name}-${identity()}"
+                  override val id: String = "${this@Given.name}-${identity()}"
                   override val givenDescription: String get() = this@Given.description
                   override val whenDescription: String get() = this@When.description
                   override val thenDescription: String get() = description
