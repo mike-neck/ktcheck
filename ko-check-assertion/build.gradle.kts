@@ -21,6 +21,8 @@ dependencies {
   api(project(":ko-check-api"))
 
   implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+
+  testRuntimeOnly(project(":ko-check-engine"))
 }
 
 tasks.withType<Test> {
