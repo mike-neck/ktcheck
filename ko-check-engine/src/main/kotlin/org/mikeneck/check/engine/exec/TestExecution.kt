@@ -7,6 +7,7 @@ import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.ClassSource
 import org.mikeneck.check.Test
 import org.mikeneck.check.engine.Execution
+import org.mikeneck.check.engine.Execution.Companion.invoke
 import org.mikeneck.check.engine.ExecutionListener
 import java.util.*
 
@@ -15,7 +16,8 @@ class TestExecution(
     private val test: Test
 ): Execution {
 
-  override fun execute(listener: ExecutionListener) = children().forEach { it.execute(listener) }
+  override fun execute(listener: ExecutionListener) =
+      listener.onTestStart(this) () { children().forEach { it.execute(listener) } } () { listener.onTestSucceeded(this) }
 
   override fun children(): Iterable<Execution> = test.all.map { CheckExecution(this, test, it) }
 

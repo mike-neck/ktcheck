@@ -6,6 +6,7 @@ import org.junit.platform.engine.TestTag
 import org.junit.platform.engine.UniqueId
 import org.mikeneck.check.Test
 import org.mikeneck.check.engine.Execution
+import org.mikeneck.check.engine.Execution.Companion.invoke
 import org.mikeneck.check.engine.ExecutionListener
 import java.util.*
 
@@ -14,7 +15,8 @@ class EngineExecution(
     internal val allTests: Iterable<Test>
 ): Execution {
 
-  override fun execute(listener: ExecutionListener) = children().forEach { it.execute(listener) }
+  override fun execute(listener: ExecutionListener) =
+      listener.onTestStart(this) () { children().forEach { it.execute(listener) } } () { listener.onTestSucceeded(this) }
 
   override fun children(): Iterable<Execution> = allTests.map { TestExecution(this, it) }
 
@@ -30,7 +32,7 @@ class EngineExecution(
 
   override fun getType(): TestDescriptor.Type = TestDescriptor.Type.CONTAINER
 
-  override fun getUniqueId(): UniqueId = rootUniqueId.append("ko-check", "engine-execution")
+  override fun getUniqueId(): UniqueId = rootUniqueId
 
   override fun removeChild(descriptor: TestDescriptor?) = Unit
 
