@@ -26,41 +26,33 @@ fun checkContext(given: Any, `when`: Any?, instant: Instant = Instant.now()): Ch
   override val `when`: Any? get() = `when`
 }
 
+fun <C: Any, A: Any, G: Any, W> successCase(given: G, `when`: W): C.(A, Assertion) -> Assertion = { _, assertion ->
+  if (assertion.result(checkDescription, checkContext(given, `when`)) == null) Assertion.success()
+  else Assertion.fail()
+}
+
+fun <C: Any, A: Any, G: Any, W> failCase(given: G, `when`: W): C.(A, Assertion) -> Assertion = { _, assertion ->
+  if (assertion.result(checkDescription, checkContext(given, `when`)) != null) Assertion.success()
+  else Assertion.fail()
+}
+
 object NoDepExpectTest: Test
 by Given("expect 1", { expect<Unit, Unit, Int>(1) })
     .When("assert 1 with it", { assertion -> Unit.assertion(Unit, 1) })
-    .Then("success", { _, assertion: Assertion ->
-      if (assertion.result(checkDescription, checkContext(1, 1)) == null) Assertion.success() 
-      else Assertion.fail()
-    })
+    .Then("success", successCase(1, 1))
     .When("assert 2 with it", { assertion -> Unit.assertion(Unit, 2) })
-    .Then("failure", { _, assertion -> 
-      if (assertion.result(checkDescription, checkContext(1, 2)) != null) Assertion.success()
-      else Assertion.fail()
-    })
+    .Then("failure", failCase(1, 2))
 
 object NoDepExpectNullTest: Test
 by Given("expectNull", { expectNull<Unit, Unit, String>() })
     .When("assert non-null with it", { assertion -> Unit.assertion(Unit, "foo") })
-    .Then("fail", { _, assertion ->
-      if (assertion.result(checkDescription, checkContext("not-null", "not-null")) != null) Assertion.success()
-      else Assertion.fail()
-    })
+    .Then("fail", failCase("not-null", "not-null"))
     .When("assert null with it",{ assertion -> Unit.assertion(Unit, null) })
-    .Then("success", { _, assertion ->
-      if (assertion.result(checkDescription, checkContext("not-null", "not-null")) == null) Assertion.success()
-      else Assertion.fail()
-    })
+    .Then("success", successCase("not-null", null))
 
 object NoDepShouldBeTest: Test
 by Given("1", { 1 })
     .When("assert with 'shouldBe' 1",{ one -> one shouldBe 1 })
-    .Then("it is success", { _, assertion -> 
-      if (assertion.result(checkDescription, checkContext(1, 1)) == null) Assertion.success()
-      else Assertion.fail()
-    })
+    .Then("it is success", successCase(1, 1))
     .When("assert with 'shouldBe 2'", { one -> one shouldBe 2 })
-    .Then("it is failure", { _, assertion ->
-      if (assertion.result(checkDescription, checkContext(1, 2)) != null) Assertion.success()
-      else Assertion.fail()
-    })
+    .Then("it is failure", failCase(1, 2))
