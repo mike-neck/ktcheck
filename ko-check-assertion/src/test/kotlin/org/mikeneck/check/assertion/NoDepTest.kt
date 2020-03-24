@@ -8,6 +8,7 @@ import org.mikeneck.check.Test
 import org.mikeneck.check.Timer
 
 import org.mikeneck.check.assertion.NoDep.expect
+import org.mikeneck.check.assertion.NoDep.expectNotNull
 import org.mikeneck.check.assertion.NoDep.expectNull
 import org.mikeneck.check.assertion.NoDep.shouldBe
 import java.time.Instant
@@ -49,6 +50,13 @@ by Given("expectNull", { expectNull<Unit, Unit, String>() })
     .Then("fail", failCase("not-null", "not-null"))
     .When("assert null with it",{ assertion -> Unit.assertion(Unit, null) })
     .Then("success", successCase("not-null", null))
+
+object NoDepExpectNotNullTest: Test
+by Given("expectNotNull", { expectNotNull<Unit, Unit, String>() })
+    .When("assert non-null with it", { assertion -> Unit.assertion(Unit, "foo") })
+    .Then("success", successCase("non-null", "foo"))
+    .When("assert null with it", { assertion -> Unit.assertion(Unit, null) })
+    .Then("failure", failCase("non-null", null))
 
 object NoDepShouldBeTest: Test
 by Given("1", { 1 })
