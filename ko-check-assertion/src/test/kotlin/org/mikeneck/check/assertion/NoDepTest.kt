@@ -8,6 +8,7 @@ import org.mikeneck.check.Test
 import org.mikeneck.check.Timer
 
 import org.mikeneck.check.assertion.NoDep.expect
+import org.mikeneck.check.assertion.NoDep.shouldBe
 import java.time.Instant
 
 val checkDescription: CheckDescription = object : CheckDescription {
@@ -37,4 +38,15 @@ by Given("expect 1", { expect<Unit, Unit, Int>(1) })
       else Assertion.fail()
     })
 
-
+object NoDepShouldBeTest: Test
+by Given("1", { 1 })
+    .When("assert with 'shouldBe' 1",{ one -> one shouldBe 1 })
+    .Then("it is success", { _, assertion -> 
+      if (assertion.result(checkDescription, checkContext(1, 1)) == null) Assertion.success()
+      else Assertion.fail()
+    })
+    .When("assert with 'shouldBe 2'", { one -> one shouldBe 2 })
+    .Then("it is failure", { _, assertion ->
+      if (assertion.result(checkDescription, checkContext(1, 2)) != null) Assertion.success()
+      else Assertion.fail()
+    })
