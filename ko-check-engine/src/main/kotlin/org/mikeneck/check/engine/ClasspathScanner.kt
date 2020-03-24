@@ -5,6 +5,7 @@ import io.github.classgraph.ScanResult
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.discovery.ClassNameFilter
+import org.junit.platform.engine.discovery.ClassSelector
 import org.mikeneck.check.Either
 import org.mikeneck.check.Test
 import org.mikeneck.check.engine.exec.EngineExecution
@@ -28,20 +29,20 @@ class ClasspathScanner(
   private fun includeClasses(): Iterable<Predicate<String>> =
       request.getFiltersByType(ClassNameFilter::class.java).map { it.toPredicate() }
 
+  private val requestClasses: List<String> = request.getSelectorsByType(ClassSelector::class.java).map { it.className }
+
   fun scanTests(): EngineExecution = try {
     ClassGraph()
         .enableClassInfo()
         .blacklistClasses(*koCheckApiExcludes())
-        .filterClasspathElements { classpath -> 
-          classpath.split("/").tailPermutation(".").any { name -> 
-            includeClasses().any { it.test(name) } 
-          }
-        }.scan()
+        .scan()
         .use { scanResult -> 
           Either.right<Throwable, ScanResult>(scanResult) ("retrieve information on Test implementation classes") {
             it.getClassesImplementing(Test::class.qualifiedName)
           } ("load classes") { classInfoList ->  
-            classInfoList.map {
+            classInfoList.filter {
+              requestClasses.contains(it.name)
+            }.map {
               @Suppress("UNCHECKED_CAST")
               it.loadClass().kotlin as KClass<Test>
             }
