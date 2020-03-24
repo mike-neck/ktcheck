@@ -27,9 +27,19 @@ jobs:
       - name: Run API Tests
         run: ./gradlew clean ":ko-check-api:test"
 
-      - name: Store Reports
+      - name: Store Reports of API Tests
         uses: actions/upload-artifact@v1
         if: always()
         with:
           name: ko-check-api-test-reports
           path: ko-check-api/build/reports/tests/test
+
+      - name: Run Assertion Tests
+        run: ./gradlew ":ko-check-assertion:test"
+
+      - name: Store Reports of Assertion Tests
+        uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: ko-check-assertion-test-reports
+          path: ko-check-assertion/build/reports/tests/test
