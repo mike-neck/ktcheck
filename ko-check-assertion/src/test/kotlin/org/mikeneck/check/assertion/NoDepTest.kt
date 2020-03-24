@@ -11,6 +11,7 @@ import org.mikeneck.check.assertion.NoDep.expect
 import org.mikeneck.check.assertion.NoDep.expectNotNull
 import org.mikeneck.check.assertion.NoDep.expectNull
 import org.mikeneck.check.assertion.NoDep.shouldBe
+import org.mikeneck.check.assertion.NoDep.shouldNotBe
 import java.time.Instant
 
 val checkDescription: CheckDescription = object : CheckDescription {
@@ -64,3 +65,10 @@ by Given("1", { 1 })
     .Then("it is success", successCase(1, 1))
     .When("assert with 'shouldBe 2'", { one -> one shouldBe 2 })
     .Then("it is failure", failCase(1, 2))
+
+object NoDepShouldNotBeTest: Test
+by Given("1", { 1 })
+    .When("assert it with 'shouldNotBe' 2", { one -> one shouldNotBe 2 })
+    .Then("success", successCase(1, 2))
+    .When("assert it with 'shouldNotBe' 1", { one -> one shouldNotBe 1 })
+    .Then("failure", failCase(1, 1))
