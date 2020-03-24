@@ -25,15 +25,29 @@ sealed class Unsuccessful(val tags: Iterable<String>, open val original: Throwab
       private val `when`: Any?,
       private val thenDescription: String,
       override val original: AssertionFailedError): Unsuccessful(tags, original) {
+
+    private val noDetailValues: Boolean get() =
+        when (original.expected to original.actual) {
+          null to null -> true
+          else -> false
+        }
+
+    private val comparison: String get() = 
+      if (noDetailValues) "[failure without comparison]\n"
+      else """|
+        |expected: ${original.expected?.stringRepresentation ?: "<null>"}
+        |actual  : ${original.actual?.stringRepresentation ?: "<null>"}
+        |
+      """.trimMargin()
+
     override fun toString(): String =
         """|
           |Test failed. ${tags.joinToString(",")}
-          |expected: ${original.expected.stringRepresentation}
-          |actual  : ${original.actual.stringRepresentation}
+          |${comparison}
+          |Given $givenDescription:  $given
+          |When $whenDescription:  $`when`
+          |Then $thenDescription
           |
-          |given $givenDescription:  $given
-          |when $whenDescription:  $`when`
-          |then $thenDescription
         """.trimMargin()
   }
 
