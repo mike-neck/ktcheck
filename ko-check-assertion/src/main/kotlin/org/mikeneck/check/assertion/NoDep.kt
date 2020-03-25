@@ -32,20 +32,4 @@ object NoDep {
       else Assertion.fail()
 
   infix fun <T: Any> T.should(matcher: Matcher<T>): Assertion = matcher.perform(this)
-
-  infix fun <T: Any> Iterable<T>.shouldContain(expected: T): Assertion =
-      if (this.any { it == expected }) Assertion.success()
-      else Assertion.fail("contains $expected", this)
-
-  infix fun String.shouldContain(expected: CharSequence): Assertion =
-      if (this.contains(expected)) Assertion.success()
-      else Assertion.fail("contains $expected", this)
-
-  infix fun String.shouldStartWith(expected: CharSequence): Assertion =
-      if (this.startsWith(expected)) Assertion.success()
-      else Assertion.fail("starts with $expected", this)
-
-  infix fun String.shouldEndWith(expected: CharSequence): Assertion =
-      if (this.endsWith(expected)) Assertion.success()
-      else Assertion.fail("ends with $expected", this)
 }
