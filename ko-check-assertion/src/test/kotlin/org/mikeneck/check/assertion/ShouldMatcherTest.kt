@@ -17,3 +17,10 @@ by Given("[foo,bar,qux]", { listOf("foo", "bar", "qux") })
     .Then("success", successCase(listOf("foo", "bar", "qux"), listOf("foo", "bar")))
     .When("assert it with 'should containAll(bar,baz)'", { list -> list should containAll("bar", "baz") })
     .Then("failure", failCase(listOf("foo", "bar", "qux"), listOf("bar", "baz")))
+
+object ShouldContainStringTest: Test
+by Given("foo/bar/baz", { "foo/bar/baz" })
+    .When("assert it with 'should contain(r/b)'", { string -> string should contain("r/b") })
+    .Then("success", successCase("foo/bar/baz", "r/b"))
+    .When("assert it with 'should contain(qux/)'", { string -> string should contain("qux/") })
+    .Then("failure", failCase("foo/bar/baz", "qux/"))
