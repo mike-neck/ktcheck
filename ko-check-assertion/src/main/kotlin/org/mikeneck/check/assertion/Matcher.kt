@@ -42,9 +42,12 @@ object AnyMatchers {
   }
 }
 
-fun contain(segment: String): Matcher<String> = object : MatcherSupport<String>() {
+object StringMatchers {
 
-  override fun matches(actual: String): Boolean = actual.contains(segment)
+  fun contain(segment: String): Matcher<String> = object : MatcherSupport<String>() {
 
-  override fun expectedValue(actual: String): Any = "expected to contain $segment"
+    override fun matches(actual: String): Boolean = actual.contains(segment)
+
+    override fun expectedValue(actual: String): Any = "expected to contain $segment"
+  }
 }

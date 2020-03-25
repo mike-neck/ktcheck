@@ -5,6 +5,7 @@ import org.mikeneck.check.Test
 import org.mikeneck.check.assertion.AnyMatchers.be
 import org.mikeneck.check.assertion.IterableMatchers.containAll
 import org.mikeneck.check.assertion.NoDep.should
+import org.mikeneck.check.assertion.StringMatchers.contain
 
 object ShouldBeTest: Test
 by Given("1", { 1 })
