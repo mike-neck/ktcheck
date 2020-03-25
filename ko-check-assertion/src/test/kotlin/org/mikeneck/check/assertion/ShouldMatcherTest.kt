@@ -2,6 +2,7 @@ package org.mikeneck.check.assertion
 
 import org.mikeneck.check.Given
 import org.mikeneck.check.Test
+import org.mikeneck.check.assertion.IterableMatchers.containAll
 import org.mikeneck.check.assertion.NoDep.should
 
 object ShouldBeTest: Test
