@@ -19,3 +19,9 @@ fun <T: Any> containAll(vararg items: T): Matcher<Iterable<T>> = object : Matche
                     .let { Assertion.fail(actual, "contains ${items.toList()}\n,  but $it is not found") }
             } }
 }
+
+fun <T: Any> be(expected: T): Matcher<T> = object : Matcher<T> {
+  override fun perform(actual: T): Assertion =
+      if (actual == expected) Assertion.success()
+      else Assertion.fail(expected, actual)
+}
