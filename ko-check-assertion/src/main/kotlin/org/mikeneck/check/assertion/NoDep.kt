@@ -31,6 +31,8 @@ object NoDep {
       if (predicate(this)) Assertion.success()
       else Assertion.fail()
 
+  infix fun <T: Any> T.should(matcher: Matcher<T>): Assertion = matcher.perform(this)
+
   infix fun <T: Any> Iterable<T>.shouldContain(expected: T): Assertion =
       if (this.any { it == expected }) Assertion.success()
       else Assertion.fail("contains $expected", this)
