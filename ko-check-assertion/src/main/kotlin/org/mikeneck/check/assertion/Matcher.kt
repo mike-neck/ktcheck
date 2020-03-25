@@ -17,6 +17,7 @@ abstract class MatcherSupport<T>: Matcher<T> {
 }
 
 object IterableMatchers {
+
   fun <T: Any> containAll(vararg items: T): Matcher<Iterable<T>> = object : Matcher<Iterable<T>> {
     override fun perform(actual: Iterable<T>): Assertion =
         actual.toSet()
@@ -32,10 +33,13 @@ object IterableMatchers {
   }
 }
 
-fun <T: Any> be(expected: T): Matcher<T> = object : Matcher<T> {
-  override fun perform(actual: T): Assertion =
-      if (actual == expected) Assertion.success()
-      else Assertion.fail(expected, actual)
+object AnyMatchers {
+
+  fun <T: Any> be(expected: T): Matcher<T> = object : Matcher<T> {
+    override fun perform(actual: T): Assertion =
+        if (actual == expected) Assertion.success()
+        else Assertion.fail(expected, actual)
+  }
 }
 
 fun contain(segment: String): Matcher<String> = object : MatcherSupport<String>() {
