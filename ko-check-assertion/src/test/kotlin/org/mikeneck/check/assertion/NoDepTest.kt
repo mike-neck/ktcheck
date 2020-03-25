@@ -10,6 +10,7 @@ import org.mikeneck.check.Timer
 import org.mikeneck.check.assertion.NoDep.expect
 import org.mikeneck.check.assertion.NoDep.expectNotNull
 import org.mikeneck.check.assertion.NoDep.expectNull
+import org.mikeneck.check.assertion.NoDep.satisfies
 import org.mikeneck.check.assertion.NoDep.shouldBe
 import org.mikeneck.check.assertion.NoDep.shouldNotBe
 import java.time.Instant
@@ -72,3 +73,10 @@ by Given("1", { 1 })
     .Then("success", successCase(1, 2))
     .When("assert it with 'shouldNotBe' 1", { one -> one shouldNotBe 1 })
     .Then("failure", failCase(1, 1))
+
+object NoDeoSatisfiesTest: Test
+by Given("1", { 1 })
+    .When("assert it with 'satisfies { it > 0 }'", { one -> one satisfies { it > 0 } })
+    .Then("success", successCase(1, true))
+    .When("assert it with 'satisfies { it < 0 }'", { one -> one satisfies { it < 0 } })
+    .Then("failure", failCase(1, false))
