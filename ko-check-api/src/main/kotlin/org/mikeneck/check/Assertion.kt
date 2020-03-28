@@ -4,9 +4,9 @@ import org.opentest4j.AssertionFailedError
 
 interface Assertion {
 
-  fun result(checkDescription: CheckDescription, checkContext: CheckContext): Unsuccessful?
+  fun result(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): Unsuccessful?
 
-  fun toCheckResult(checkDescription: CheckDescription, checkContext: CheckContext): CheckResult
+  fun toCheckResult(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult
 
   companion object {
 
@@ -19,40 +19,40 @@ interface Assertion {
 
   object Success: Assertion {
 
-    override fun result(checkDescription: CheckDescription, checkContext: CheckContext): Unsuccessful? = null
+    override fun result(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): Unsuccessful? = null
 
-    override fun toCheckResult(checkDescription: CheckDescription, checkContext: CheckContext): CheckResult =
-        CheckResult.success(checkDescription, checkContext)
+    override fun toCheckResult(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult =
+        CheckResult.success(ktPropertyDescription, ktPropertyContext)
   }
 
   class ComparisonFailure(private val expected: Any?, private val actual: Any?): Assertion {
 
-    override fun result(checkDescription: CheckDescription, checkContext: CheckContext): Unsuccessful = Unsuccessful.ByAssertionFailure(
-        given = checkContext.given,
-        givenDescription = checkDescription.givenDescription,
-        `when` = checkContext.`when`,
-        whenDescription = checkDescription.whenDescription,
-        thenDescription = checkDescription.thenDescription,
-        tags = listOf(checkDescription.id, checkDescription.name),
-        original = AssertionFailedError("test failed - ${checkDescription.name}", expected, actual))
+    override fun result(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): Unsuccessful = Unsuccessful.ByAssertionFailure(
+        given = ktPropertyContext.given,
+        givenDescription = ktPropertyDescription.givenDescription,
+        `when` = ktPropertyContext.`when`,
+        whenDescription = ktPropertyDescription.whenDescription,
+        thenDescription = ktPropertyDescription.thenDescription,
+        tags = listOf(ktPropertyDescription.id, ktPropertyDescription.name),
+        original = AssertionFailedError("test failed - ${ktPropertyDescription.name}", expected, actual))
 
-    override fun toCheckResult(checkDescription: CheckDescription, checkContext: CheckContext): CheckResult =
-        CheckResult.failure(checkDescription,checkContext, result(checkDescription, checkContext))
+    override fun toCheckResult(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult =
+        CheckResult.failure(ktPropertyDescription,ktPropertyContext, result(ktPropertyDescription, ktPropertyContext))
   }
 
   object Failure: Assertion {
 
-    override fun result(checkDescription: CheckDescription, checkContext: CheckContext): Unsuccessful = Unsuccessful.ByAssertionFailure(
-        given = checkContext.given,
-        givenDescription = checkDescription.givenDescription,
-        `when` = checkContext.`when`,
-        whenDescription = checkDescription.whenDescription,
-        thenDescription = checkDescription.thenDescription,
-        tags = listOf(checkDescription.id, checkDescription.name),
-        original = AssertionFailedError("test failed - ${checkDescription.name}")
+    override fun result(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): Unsuccessful = Unsuccessful.ByAssertionFailure(
+        given = ktPropertyContext.given,
+        givenDescription = ktPropertyDescription.givenDescription,
+        `when` = ktPropertyContext.`when`,
+        whenDescription = ktPropertyDescription.whenDescription,
+        thenDescription = ktPropertyDescription.thenDescription,
+        tags = listOf(ktPropertyDescription.id, ktPropertyDescription.name),
+        original = AssertionFailedError("test failed - ${ktPropertyDescription.name}")
     )
 
-    override fun toCheckResult(checkDescription: CheckDescription, checkContext: CheckContext): CheckResult =
-        CheckResult.failure(checkDescription, checkContext, result(checkDescription, checkContext))
+    override fun toCheckResult(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult =
+        CheckResult.failure(ktPropertyDescription, ktPropertyContext, result(ktPropertyDescription, ktPropertyContext))
   }
 }

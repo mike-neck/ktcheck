@@ -3,21 +3,21 @@ package org.mikeneck.check
 import java.time.Duration
 
 sealed class CheckResult(
-    checkDescription: CheckDescription,
+    ktPropertyDescription: KtPropertyDescription,
     val executionTime: Duration,
     @Suppress("MemberVisibilityCanBePrivate")
     val unsuccessful: Unsuccessful?,
     private val result: String
 ) {
 
-  constructor(checkDescription: CheckDescription, checkContext: CheckContext, unsuccessful: Unsuccessful?, result: String):
-      this(checkDescription, checkContext.executionTime(), unsuccessful, result)
+  constructor(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext, unsuccessful: Unsuccessful?, result: String):
+      this(ktPropertyDescription, ktPropertyContext.executionTime(), unsuccessful, result)
 
-  constructor(checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful, result: String):
-      this(checkDescription, timer.stop(), unsuccessful, result)
+  constructor(ktPropertyDescription: KtPropertyDescription, timer: Timer, unsuccessful: Unsuccessful, result: String):
+      this(ktPropertyDescription, timer.stop(), unsuccessful, result)
 
   @Suppress("MemberVisibilityCanBePrivate")
-  val name: String = checkDescription.name
+  val name: String = ktPropertyDescription.name
 
   val success: Boolean get() = unsuccessful == null
 
@@ -25,35 +25,35 @@ sealed class CheckResult(
 
   companion object {
 
-    fun success(checkDescription: CheckDescription, checkContext: CheckContext): CheckResult =
-        Success(checkDescription, checkContext)
+    fun success(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult =
+        Success(ktPropertyDescription, ktPropertyContext)
 
     fun failure(
-        checkDescription: CheckDescription, checkContext: CheckContext, unsuccessful: Unsuccessful): CheckResult =
-        Failure(checkDescription, checkContext, unsuccessful)
+        ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext, unsuccessful: Unsuccessful): CheckResult =
+        Failure(ktPropertyDescription, ktPropertyContext, unsuccessful)
 
     fun error(
-        checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful): CheckResult =
-        Error(checkDescription, timer, unsuccessful)
+        ktPropertyDescription: KtPropertyDescription, timer: Timer, unsuccessful: Unsuccessful): CheckResult =
+        Error(ktPropertyDescription, timer, unsuccessful)
 
     fun skip(
-        checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful): CheckResult =
-        Skip(checkDescription, timer, unsuccessful)
+        ktPropertyDescription: KtPropertyDescription, timer: Timer, unsuccessful: Unsuccessful): CheckResult =
+        Skip(ktPropertyDescription, timer, unsuccessful)
   }
 
   class Success(
-      checkDescription: CheckDescription, checkContext: CheckContext
-  ) : CheckResult(checkDescription, checkContext, null, "SUCCESS")
+      ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext
+  ) : CheckResult(ktPropertyDescription, ktPropertyContext, null, "SUCCESS")
 
   class Failure(
-      checkDescription: CheckDescription, checkContext: CheckContext, unsuccessful: Unsuccessful
-  ) : CheckResult(checkDescription, checkContext, unsuccessful, "FAILURE")
+      ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext, unsuccessful: Unsuccessful
+  ) : CheckResult(ktPropertyDescription, ktPropertyContext, unsuccessful, "FAILURE")
 
   class Error(
-      checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful
-  ) : CheckResult(checkDescription, timer, unsuccessful, "ERROR")
+      ktPropertyDescription: KtPropertyDescription, timer: Timer, unsuccessful: Unsuccessful
+  ) : CheckResult(ktPropertyDescription, timer, unsuccessful, "ERROR")
 
   class Skip(
-      checkDescription: CheckDescription, timer: Timer, unsuccessful: Unsuccessful
-  ) : CheckResult(checkDescription, timer, unsuccessful, "SKIPPED")
+      ktPropertyDescription: KtPropertyDescription, timer: Timer, unsuccessful: Unsuccessful
+  ) : CheckResult(ktPropertyDescription, timer, unsuccessful, "SKIPPED")
 }

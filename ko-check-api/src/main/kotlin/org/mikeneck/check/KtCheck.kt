@@ -8,7 +8,7 @@ interface KtCheck {
   /**
    * Returns all checks.
    */
-  val all: Iterable<Check>
+  val all: Iterable<KtProperty>
 
   /**
    * Performs all checks.

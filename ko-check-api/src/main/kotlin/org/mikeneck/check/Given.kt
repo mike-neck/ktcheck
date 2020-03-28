@@ -12,9 +12,9 @@ class Given<C: Any, G: Any>(
         Given(description, { Unit }, { Unit }, { action() })
   }
 
-  private val list: MutableList<Check> = mutableListOf()
+  private val list: MutableList<KtProperty> = mutableListOf()
 
-  override val all: Iterable<Check> get() = list.toMutableSet()
+  override val all: Iterable<KtProperty> get() = list.toMutableSet()
 
   private val name: String get() = 
     when (val n = this.javaClass.simpleName) {
@@ -35,8 +35,8 @@ class Given<C: Any, G: Any>(
     @Suppress("FunctionName")
     fun Then(description: String = "", action: C.(G, W) -> Assertion): Given<C, G> =
         this@Given
-            .apply { this@Given.list.add(CheckImpl(
-                object : CheckDescription {
+            .apply { this@Given.list.add(PropertyGwtImpl(
+                object : KtPropertyDescription {
                   override val id: String = "${this@Given.name}-${identity()}"
                   override val givenDescription: String get() = this@Given.description
                   override val whenDescription: String get() = this@When.description

@@ -5,12 +5,12 @@ import java.time.Duration
 /**
  * Represents each test execution.
  */
-interface Check: CheckExecution, CheckDescription
+interface KtProperty: KtPropertyEntity, KtPropertyDescription
 
 /**
  * Represents performance of each test execution.
  */
-interface CheckExecution {
+interface KtPropertyEntity {
 
   fun perform(): CheckResult
 }
@@ -18,7 +18,7 @@ interface CheckExecution {
 /**
  * Description of a test's condition, action, result. Also provides its id and name.
  */
-interface CheckDescription {
+interface KtPropertyDescription {
 
   val id: String
 
@@ -34,7 +34,7 @@ interface CheckDescription {
 /**
  * Represents a context of each test execution.
  */
-interface CheckContext {
+interface KtPropertyContext {
 
   val timer: Timer
 

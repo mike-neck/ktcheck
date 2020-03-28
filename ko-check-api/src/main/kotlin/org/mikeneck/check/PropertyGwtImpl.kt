@@ -3,25 +3,25 @@ package org.mikeneck.check
 import java.time.Clock
 import java.time.Instant
 
-class CheckImpl<C : Any, G : Any, W>(
-    private val checkDescription: CheckDescription,
+class PropertyGwtImpl<C : Any, G : Any, W>(
+    private val ktPropertyDescription: KtPropertyDescription,
     private val beforeAction: () -> C,
     private val givenAction: C.() -> G,
     private val whenAction: C.(G) -> W,
     private val thenAssertion: C.(G, W) -> Assertion,
     private val afterAction: C.(G) -> Unit,
     private val clock: Clock = Clock.systemUTC()
-) : Check, CheckDescription by checkDescription {
+) : KtProperty, KtPropertyDescription by ktPropertyDescription {
 
   private val unhandledException: (String, Throwable) -> Unsuccessful = { tag, throwable ->
-    Unsuccessful.ByUnhandledException(listOf(checkDescription.id, tag, checkDescription.name), throwable)
+    Unsuccessful.ByUnhandledException(listOf(ktPropertyDescription.id, tag, ktPropertyDescription.name), throwable)
   }
 
   private fun Throwable.toCheckResult(start: Instant): CheckResult = when(this) {
-    is Unsuccessful.ByUnhandledException -> CheckResult.error(checkDescription, Timer(start, clock), this)
-    is Unsuccessful.ByAbortion -> CheckResult.skip(checkDescription, Timer(start, clock), this)
-    is Unsuccessful.BySkip -> CheckResult.skip(checkDescription, Timer(start, clock), this)
-    else -> CheckResult.error(checkDescription, Timer(start, clock), unhandledException("unknown", this))
+    is Unsuccessful.ByUnhandledException -> CheckResult.error(ktPropertyDescription, Timer(start, clock), this)
+    is Unsuccessful.ByAbortion -> CheckResult.skip(ktPropertyDescription, Timer(start, clock), this)
+    is Unsuccessful.BySkip -> CheckResult.skip(ktPropertyDescription, Timer(start, clock), this)
+    else -> CheckResult.error(ktPropertyDescription, Timer(start, clock), unhandledException("unknown", this))
   }
 
   override fun perform(): CheckResult = perform(Instant.now(clock))
@@ -38,7 +38,7 @@ class CheckImpl<C : Any, G : Any, W>(
       }("after") {
         it.accept(afterAction)
       }("finishing") {
-        it.result(checkDescription)
+        it.result(ktPropertyDescription)
       }.rescue { it.toCheckResult(start) }
 }
 
@@ -81,7 +81,7 @@ private data class AfterContext<C : Any, G : Any, W>(
 
   fun accept(afterAction: C.(G) -> Unit): FinishContext = 
       baseContext.afterAction(given) returns FinishContext(
-          object : CheckContext {
+          object : KtPropertyContext {
             override val timer: Timer get() = thenContext.whenContext.givenContext.timer
             override val given: Any get() = thenContext.given
             override val `when`: Any? get() = thenContext.whenValue
@@ -95,8 +95,8 @@ private data class AfterContext<C : Any, G : Any, W>(
 }
 
 private data class FinishContext(
-    val checkContext: CheckContext,
+    val ktPropertyContext: KtPropertyContext,
     val assertion: Assertion
 ) {
-  fun result(checkDescription: CheckDescription): CheckResult = assertion.toCheckResult(checkDescription, checkContext)
+  fun result(ktPropertyDescription: KtPropertyDescription): CheckResult = assertion.toCheckResult(ktPropertyDescription, ktPropertyContext)
 }

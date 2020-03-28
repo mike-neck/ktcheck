@@ -5,7 +5,7 @@ import org.junit.platform.engine.TestSource
 import org.junit.platform.engine.TestTag
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.MethodSource
-import org.mikeneck.check.Check
+import org.mikeneck.check.KtProperty
 import org.mikeneck.check.KtCheck
 import org.mikeneck.check.Unsuccessful
 import org.mikeneck.check.engine.Execution
@@ -16,12 +16,12 @@ import java.util.*
 class CheckExecution(
     private val parentExecution: Execution,
     private val container: KtCheck,
-    private val check: Check
+    private val ktProperty: KtProperty
 ): Execution {
 
   override fun execute(listener: ExecutionListener) = 
       listener.onTestStart(this) () {
-        check.perform()
+        ktProperty.perform()
       }.let { result -> 
         when {
           result.success -> listener.onTestSucceeded(this)
@@ -29,7 +29,7 @@ class CheckExecution(
             null -> listener.onTestUnexpectedError(
                 this, 
                 Unsuccessful.ByUnhandledException(
-                    listOf(check.id, check.name),
+                    listOf(ktProperty.id, ktProperty.name),
                     IllegalStateException("test is not successful but exception not found, ${result.name}")))
             is Unsuccessful.ByAbortion -> listener.onTestAborted(this, unsuccessful)
             is Unsuccessful.BySkip -> listener.onTestSkipped(this, unsuccessful)
@@ -38,14 +38,14 @@ class CheckExecution(
             else -> listener.onTestUnexpectedError(
                 this, 
                 Unsuccessful.ByUnhandledException(
-                    listOf(check.id, check.name), IllegalStateException("unknown state", unsuccessful)))
+                    listOf(ktProperty.id, ktProperty.name), IllegalStateException("unknown state", unsuccessful)))
           }
         }
       }
 
   override fun children(): Iterable<Execution> = emptySet()
 
-  override fun getSource(): Optional<TestSource> = Optional.of(MethodSource.from(container.javaClass.canonicalName, check.name))
+  override fun getSource(): Optional<TestSource> = Optional.of(MethodSource.from(container.javaClass.canonicalName, ktProperty.name))
 
   override fun removeFromHierarchy() = Unit
 
@@ -53,11 +53,11 @@ class CheckExecution(
 
   override fun getParent(): Optional<TestDescriptor> = Optional.of(parentExecution)
 
-  override fun getDisplayName(): String = check.name
+  override fun getDisplayName(): String = ktProperty.name
 
   override fun getType(): TestDescriptor.Type = TestDescriptor.Type.TEST
 
-  override fun getUniqueId(): UniqueId = parentExecution.uniqueId.append("check", check.id)
+  override fun getUniqueId(): UniqueId = parentExecution.uniqueId.append("check", ktProperty.id)
 
   override fun removeChild(descriptor: TestDescriptor?) = Unit
 
