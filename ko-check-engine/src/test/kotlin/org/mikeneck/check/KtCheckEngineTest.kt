@@ -6,13 +6,13 @@ import org.junit.platform.engine.DiscoverySelector
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.UniqueId
 import org.mikeneck.check.engine.Execution
-import org.mikeneck.check.engine.KoCheckEngine
+import org.mikeneck.check.engine.KtCheckEngine
 import org.mikeneck.check.engine.exec.EngineExecution
 import java.util.*
 
-class KoCheckEngineTest {
+class KtCheckEngineTest {
 
-  val tests: Iterable<Test> = listOf(
+  val tests: Iterable<KtCheck> = listOf(
       Given("1") { 1 }.When(" + 1") { it + 1 }.Then { _, _ -> Assertion.success() }
   )
 
@@ -31,7 +31,7 @@ class KoCheckEngineTest {
   fun scan(): Unit =
       Given<(EngineDiscoveryRequest, UniqueId) -> Execution>("scanner returns execution") {
         { _: EngineDiscoveryRequest, uniqueId: UniqueId -> EngineExecution(uniqueId, tests) }
-      }.When("call discover") { KoCheckEngine(it).discover(engineDiscoveryRequest, UniqueId.forEngine("ko-check")) }
+      }.When("call discover") { KtCheckEngine(it).discover(engineDiscoveryRequest, UniqueId.forEngine("ko-check")) }
           .Then("it is EngineExecution") { _, desc ->
             when (desc) {
               is EngineExecution -> if (desc.allTests == tests) Assertion.success() else Assertion.fail(tests, desc.allTests)

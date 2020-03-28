@@ -6,7 +6,7 @@ import org.junit.platform.engine.TestTag
 import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.support.descriptor.MethodSource
 import org.mikeneck.check.Check
-import org.mikeneck.check.Test
+import org.mikeneck.check.KtCheck
 import org.mikeneck.check.Unsuccessful
 import org.mikeneck.check.engine.Execution
 import org.mikeneck.check.engine.Execution.Companion.invoke
@@ -15,7 +15,7 @@ import java.util.*
 
 class CheckExecution(
     private val parentExecution: Execution,
-    private val container: Test,
+    private val container: KtCheck,
     private val check: Check
 ): Execution {
 

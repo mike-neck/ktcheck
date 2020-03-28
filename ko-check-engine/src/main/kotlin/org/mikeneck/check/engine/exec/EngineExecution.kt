@@ -4,7 +4,7 @@ import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestSource
 import org.junit.platform.engine.TestTag
 import org.junit.platform.engine.UniqueId
-import org.mikeneck.check.Test
+import org.mikeneck.check.KtCheck
 import org.mikeneck.check.engine.Execution
 import org.mikeneck.check.engine.Execution.Companion.invoke
 import org.mikeneck.check.engine.ExecutionListener
@@ -12,13 +12,13 @@ import java.util.*
 
 class EngineExecution(
     private val rootUniqueId: UniqueId,
-    internal val allTests: Iterable<Test>
+    internal val allTests: Iterable<KtCheck>
 ): Execution {
 
   override fun execute(listener: ExecutionListener) =
       listener.onTestStart(this) () { children().forEach { it.execute(listener) } } () { listener.onTestSucceeded(this) }
 
-  override fun children(): Iterable<Execution> = allTests.map { TestExecution(this, it) }
+  override fun children(): Iterable<Execution> = allTests.map { KtCheckExecution(this, it) }
 
   override fun getSource(): Optional<TestSource> = Optional.empty()
 

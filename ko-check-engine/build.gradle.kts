@@ -56,6 +56,6 @@ task("serviceLoaderDescription") {
     if (!Files.exists(path.parent)) {
       Files.createDirectories(path.parent)
     }
-    Files.write(path, "org.mikeneck.check.engine.KoCheckEngine".toByteArray())
+    Files.write(path, "org.mikeneck.check.engine.KtCheckEngine".toByteArray())
   }
 }

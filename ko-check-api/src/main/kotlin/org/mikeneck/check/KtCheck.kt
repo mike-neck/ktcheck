@@ -3,7 +3,7 @@ package org.mikeneck.check
 /**
  * Represents a test, which contains all checks for a subject.
  */
-interface Test {
+interface KtCheck {
 
   /**
    * Returns all checks.

@@ -5,7 +5,7 @@ class Given<C: Any, G: Any>(
     private val before: () -> C,
     private val after: C.(G) -> Unit = {},
     private val action: C.() -> G
-): Test {
+): KtCheck {
 
   companion object {
     operator fun <G: Any> invoke(description: String, action: () -> G): Given<Unit, G> =

@@ -8,7 +8,7 @@ import org.junit.platform.engine.UniqueId
 import org.mikeneck.check.Either
 import org.mikeneck.check.engine.exec.EngineListener
 
-class KoCheckEngine(
+class KtCheckEngine(
     private val scanner: (EngineDiscoveryRequest, UniqueId) -> Execution
 ): TestEngine {
 

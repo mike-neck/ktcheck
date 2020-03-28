@@ -7,14 +7,14 @@ import org.junit.platform.engine.UniqueId
 import org.junit.platform.engine.discovery.ClassNameFilter
 import org.junit.platform.engine.discovery.ClassSelector
 import org.mikeneck.check.Either
-import org.mikeneck.check.Test
+import org.mikeneck.check.KtCheck
 import org.mikeneck.check.engine.exec.EngineExecution
 import java.io.InputStreamReader
 import java.util.function.Predicate
 import kotlin.reflect.KClass
 
 /**
- * Scans entire classpath, and retrieves [Test] objects.
+ * Scans entire classpath, and retrieves [KtCheck] objects.
  */
 class ClasspathScanner(
     private val request: EngineDiscoveryRequest,
@@ -38,13 +38,13 @@ class ClasspathScanner(
         .scan()
         .use { scanResult -> 
           Either.right<Throwable, ScanResult>(scanResult) ("retrieve information on Test implementation classes") {
-            it.getClassesImplementing(Test::class.qualifiedName)
+            it.getClassesImplementing(KtCheck::class.qualifiedName)
           } ("load classes") { classInfoList ->  
             classInfoList.filter {
               requestClasses.contains(it.name)
             }.map {
               @Suppress("UNCHECKED_CAST")
-              it.loadClass().kotlin as KClass<Test>
+              it.loadClass().kotlin as KClass<KtCheck>
             }
           } ("get object instance") { classList ->
             classList.mapNotNull { it.objectInstance }
