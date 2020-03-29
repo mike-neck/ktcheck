@@ -6,30 +6,30 @@ import run.ktcheck.KtPropertyContext
 import run.ktcheck.KtPropertyDescription
 import run.ktcheck.Unsuccessful
 
-interface AllMatcher<T>: Matcher<T> {
+interface CompositeMatcher<T>: Matcher<T> {
 
   val matchers: List<Matcher<T>>
 
   companion object {
-    fun <T> all(vararg matchers: Matcher<T>): AllMatcher<T> = AllMatcherImpl(listOf(*matchers))
+    fun <T> all(vararg matchers: Matcher<T>): CompositeMatcher<T> = CompositeMatcherImpl(listOf(*matchers))
 
-    infix fun <T> Matcher<T>.and(matcher: Matcher<T>): AllMatcher<T> =
+    infix fun <T> Matcher<T>.and(matcher: Matcher<T>): CompositeMatcher<T> =
         when (this) {
-          is AllMatcher<T> -> when (matcher) {
-            is AllMatcher<T> -> AllMatcherImpl(this.matchers + matcher.matchers)
-            else -> AllMatcherImpl(this.matchers + matcher)
+          is CompositeMatcher<T> -> when (matcher) {
+            is CompositeMatcher<T> -> CompositeMatcherImpl(this.matchers + matcher.matchers)
+            else -> CompositeMatcherImpl(this.matchers + matcher)
           }
           else -> when (matcher) {
-            is AllMatcher<T> -> AllMatcherImpl(listOf(this) + matcher.matchers)
-            else -> AllMatcherImpl(listOf(this, matcher))
+            is CompositeMatcher<T> -> CompositeMatcherImpl(listOf(this) + matcher.matchers)
+            else -> CompositeMatcherImpl(listOf(this, matcher))
           }
         }
   }
 }
 
-internal class AllMatcherImpl<T>(
+internal class CompositeMatcherImpl<T>(
     override val matchers: List<Matcher<T>>
-): AllMatcher<T> {
+): CompositeMatcher<T> {
 
   override fun perform(actual: T): Assertion =
       CompositeAssertion(matchers.map { it.perform(actual) })
