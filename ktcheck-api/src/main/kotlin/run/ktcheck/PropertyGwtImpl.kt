@@ -18,10 +18,10 @@ class PropertyGwtImpl<C : Any, G : Any, W>(
   }
 
   private fun Throwable.toCheckResult(start: Instant): CheckResult = when(this) {
-    is Unsuccessful.ByUnhandledException -> CheckResult.Companion.error(ktPropertyDescription, Timer(start, clock), this)
-    is Unsuccessful.ByAbortion -> CheckResult.Companion.skip(ktPropertyDescription, Timer(start, clock), this)
-    is Unsuccessful.BySkip -> CheckResult.Companion.skip(ktPropertyDescription, Timer(start, clock), this)
-    else -> CheckResult.Companion.error(ktPropertyDescription, Timer(start, clock), unhandledException("unknown", this))
+    is Unsuccessful.ByUnhandledException -> CheckResult.error(ktPropertyDescription, Timer(start, clock), this)
+    is Unsuccessful.ByAbortion -> CheckResult.skip(ktPropertyDescription, Timer(start, clock), this)
+    is Unsuccessful.BySkip -> CheckResult.skip(ktPropertyDescription, Timer(start, clock), this)
+    else -> CheckResult.error(ktPropertyDescription, Timer(start, clock), unhandledException("unknown", this))
   }
 
   override fun perform(): CheckResult = perform(Instant.now(clock))

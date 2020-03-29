@@ -51,16 +51,42 @@ sealed class Unsuccessful(val tags: Iterable<String>, open val original: Throwab
         """.trimMargin()
   }
 
+  class Composite(tags: Iterable<String>, internal val exceptions: Iterable<Unsuccessful>): Unsuccessful(tags, CompositeException(exceptions)) {
+
+    fun type(): FailureType =
+        exceptions.map { it.javaClass.kotlin }.let { list ->
+          when {
+            list.any { it == ByUnhandledException::class } -> FailureType.UN_HANDLE_ERROR
+            list.any { it == ByAssertionFailure::class } -> FailureType.ASSERTION_FAILURE
+            list.any { it == ByAbortion::class || it == BySkip::class } -> FailureType.ABORTION
+            else -> FailureType.UN_HANDLE_ERROR
+          }
+        }
+
+    enum class FailureType {
+      UN_HANDLE_ERROR,
+      ASSERTION_FAILURE,
+      ABORTION
+    }
+  }
+
+  
+
   class CompositeException(private val exceptions: Iterable<Unsuccessful>): RuntimeException() {
     override val message: String? get() = """|
       |composite exception:
-      |  ${exceptions.map { 
-      when (it) {
-        is Unsuccessful.BySkip -> "${it.tags.joinToString(", ")} - skipped"
-        is Unsuccessful.ByAbortion -> "${it.tags.joinToString(", ")} - skipped(aborted)"
-        is Unsuccessful.ByUnhandledException -> "${it.tags.joinToString(", ")} - error: ${it.original}"
-        is Unsuccessful.ByAssertionFailure -> "${it.tags.joinToString(", ")} - failed - expected: ${it.original.expected.stringRepresentation}/ actual : ${it.original.actual.stringRepresentation}"
-      } }.joinToString("\n  ")}
+      |  ${exceptions.joinToString("\n  ") { showOneLine(it) }}
     """.trimMargin()
+  }
+
+  companion object {
+    fun showOneLine(unsuccessful: Unsuccessful, spaceSize: Int = 2, spaces: String = (1..spaceSize).joinToString("") {  " " }): String =
+        when (unsuccessful) {
+          is Composite -> unsuccessful.exceptions.joinToString("\n${spaces}") { showOneLine(it, 0) }
+          is BySkip -> "${unsuccessful.tags.joinToString(", ", spaces)} - skipped"
+          is ByAbortion -> "${unsuccessful.tags.joinToString(", ", spaces)} - skipped(aborted)"
+          is ByUnhandledException -> "${unsuccessful.tags.joinToString(", ", spaces)} - error: ${unsuccessful.original}"
+          is ByAssertionFailure -> "${unsuccessful.tags.joinToString(", ", spaces)} - failed - expected: ${unsuccessful.original.expected.stringRepresentation}/ actual : ${unsuccessful.original.actual.stringRepresentation}"
+        }
   }
 }

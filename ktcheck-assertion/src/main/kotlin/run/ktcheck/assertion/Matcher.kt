@@ -9,17 +9,22 @@ interface Matcher<T> {
 abstract class MatcherSupport<T>: Matcher<T> {
   override fun perform(actual: T): Assertion =
       if (matches(actual)) Assertion.success()
-      else Assertion.fail(expectedValue(actual), actual)
+      else Assertion.fail(expectedValue, actual)
 
   abstract fun matches(actual: T): Boolean
 
-  abstract fun expectedValue(actual: T): Any
+  abstract val expectedValue: Any
 }
 
 object IterableMatchers {
 
-  fun <T: Any> containAll(vararg items: T): Matcher<Iterable<T>> = object : Matcher<Iterable<T>> {
-    override fun perform(actual: Iterable<T>): Assertion =
+  fun <T: Any, C: Collection<T>> haveSize(size: Int): Matcher<C> = object : MatcherSupport<C>() {
+    override fun matches(actual: C): Boolean = actual.size  == size
+    override val expectedValue: Any = "has size $size"
+  }
+
+  fun <T: Any, C: Iterable<T>> containAll(vararg items: T): Matcher<C> = object : Matcher<C> {
+    override fun perform(actual: C): Assertion =
         actual.toSet()
             .let { act ->
               when {
@@ -45,9 +50,7 @@ object AnyMatchers {
 object StringMatchers {
 
   fun contain(segment: String): Matcher<String> = object : MatcherSupport<String>() {
-
     override fun matches(actual: String): Boolean = actual.contains(segment)
-
-    override fun expectedValue(actual: String): Any = "expected to contain $segment"
+    override val expectedValue: Any = "expected to contain $segment"
   }
 }

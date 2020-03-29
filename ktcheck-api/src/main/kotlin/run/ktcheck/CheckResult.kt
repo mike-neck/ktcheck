@@ -26,19 +26,19 @@ sealed class CheckResult(
   companion object {
 
     fun success(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult =
-        CheckResult.Success(ktPropertyDescription, ktPropertyContext)
+        Success(ktPropertyDescription, ktPropertyContext)
 
     fun failure(
         ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext, unsuccessful: Unsuccessful): CheckResult =
-        CheckResult.Failure(ktPropertyDescription, ktPropertyContext, unsuccessful)
+        Failure(ktPropertyDescription, ktPropertyContext, unsuccessful)
 
     fun error(
         ktPropertyDescription: KtPropertyDescription, timer: Timer, unsuccessful: Unsuccessful): CheckResult =
-        CheckResult.Error(ktPropertyDescription, timer, unsuccessful)
+        Error(ktPropertyDescription, timer, unsuccessful)
 
     fun skip(
         ktPropertyDescription: KtPropertyDescription, timer: Timer, unsuccessful: Unsuccessful): CheckResult =
-        CheckResult.Skip(ktPropertyDescription, timer, unsuccessful)
+        Skip(ktPropertyDescription, timer, unsuccessful)
   }
 
   class Success(
