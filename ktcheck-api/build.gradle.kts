@@ -1,5 +1,5 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.nio.file.Files
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   kotlin("jvm") version "1.3.70"
@@ -7,7 +7,7 @@ plugins {
 
 val projectVersion: String by project
 
-group = "org.mikeneck.ko-check"
+group = "org.mikeneck.ktcheck"
 version = projectVersion
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
@@ -18,13 +18,13 @@ repositories {
 
 dependencies {
   val kotlinVersion: String by project
+  api(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
+  api("org.jetbrains.kotlin:kotlin-reflect")
+  api("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
   implementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
-  implementation(project(":ko-check-api"))
-  val junitEngineVersion: String by project
   val openTest4jVersion: String by project
-  implementation("org.junit.platform:junit-platform-engine:$junitEngineVersion")
   implementation("org.opentest4j:opentest4j:$openTest4jVersion")
-  implementation("io.github.classgraph:classgraph:4.8.65")
 
   val junitVersion: String by project
   testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
@@ -40,22 +40,27 @@ tasks.withType<KotlinCompile> {
     jvmTarget = "1.8"
   }
   if (name == "compileKotlin") {
-    finalizedBy("serviceLoaderDescription")
+    finalizedBy("listExcludeClasses")
   }
 }
 
-task("serviceLoaderDescription") {
+task("listExcludeClasses") {
   val kotlinCompile = tasks.getByPath("compileKotlin") as KotlinCompile
   dependsOn(kotlinCompile)
 
-  val dir = kotlinCompile.destinationDir
-  val path = dir.toPath().resolve("META-INF/services/org.junit.platform.engine.TestEngine")
-  outputs.file(path)
+  val path = kotlinCompile.destinationDir.toPath()
+  val out = path.resolve("ktcheck-api-excludes.txt")
 
-  doLast { 
-    if (!Files.exists(path.parent)) {
-      Files.createDirectories(path.parent)
-    }
-    Files.write(path, "org.mikeneck.check.engine.KtCheckEngine".toByteArray())
+  outputs.file(out)
+
+  doLast {
+    val files = project.fileTree(kotlinCompile.destinationDir).files
+        .asSequence()
+        .filter { !it.name.contains("kotlin_module") }
+        .filter { !it.name.matches(Regex(".+\\$[0-9]+\\.class$")) }
+        .map { path.relativize(it.toPath()).toString() }
+        .map { it.replace(".class", "") }
+        .map { it.replace("/", ".") }
+    Files.write(out, files.toMutableList(), Charsets.UTF_8)
   }
 }

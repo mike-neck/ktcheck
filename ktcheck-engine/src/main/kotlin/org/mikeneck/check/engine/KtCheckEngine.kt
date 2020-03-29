@@ -22,7 +22,7 @@ class KtCheckEngine(
         scanner(it.first, it.second) 
       }.throwOnLeft()
 
-  override fun getId(): String = "ko-check"
+  override fun getId(): String = "ktcheck"
 
   override fun execute(request: ExecutionRequest?) =
       if (request == null) throw IllegalArgumentException("request is null")  

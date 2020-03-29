@@ -1,9 +1,9 @@
 [user-program] as user
 
-[ko-check] as kc
-[ko-check-api] as api
-[ko-check-assertion] as ast
-[ko-check-engine] as eng
+[ktcheck] as kc
+[ktcheck-api] as api
+[ktcheck-assertion] as ast
+[ktcheck-engine] as eng
 [junit-platform-engine] as jen
 [opentest4j] as open
 

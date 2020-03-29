@@ -28,7 +28,7 @@ class EngineExecution(
 
   override fun getParent(): Optional<TestDescriptor> = Optional.empty()
 
-  override fun getDisplayName(): String = "ko-check"
+  override fun getDisplayName(): String = "ktcheck"
 
   override fun getType(): TestDescriptor.Type = TestDescriptor.Type.CONTAINER
 

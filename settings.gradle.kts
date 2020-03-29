@@ -6,9 +6,9 @@
  * in the user manual at https://docs.gradle.org/6.2.2/userguide/multi_project_builds.html
  */
 
-rootProject.name = "ko-check-root"
-include("ko-check")
-include("ko-check-api")
-include("ko-check-engine")
-include("ko-check-example")
-include("ko-check-assertion")
+rootProject.name = "ktcheck-root"
+include("ktcheck")
+include("ktcheck-api")
+include("ktcheck-engine")
+include("ktcheck-example")
+include("ktcheck-assertion")

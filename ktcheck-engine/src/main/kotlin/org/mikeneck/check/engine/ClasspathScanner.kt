@@ -22,7 +22,7 @@ class ClasspathScanner(
 ) {
 
   private fun koCheckApiExcludes(): Array<String> =
-      Thread.currentThread().contextClassLoader.getResourceAsStream("ko-check-api-excludes.txt")?.use { 
+      Thread.currentThread().contextClassLoader.getResourceAsStream("ktcheck-api-excludes.txt")?.use { 
         InputStreamReader(it).readLines().toTypedArray()
       }?: emptyArray()
 

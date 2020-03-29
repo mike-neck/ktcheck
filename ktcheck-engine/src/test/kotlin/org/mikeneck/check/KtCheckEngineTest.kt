@@ -31,7 +31,7 @@ class KtCheckEngineTest {
   fun scan(): Unit =
       Given<(EngineDiscoveryRequest, UniqueId) -> Execution>("scanner returns execution") {
         { _: EngineDiscoveryRequest, uniqueId: UniqueId -> EngineExecution(uniqueId, tests) }
-      }.When("call discover") { KtCheckEngine(it).discover(engineDiscoveryRequest, UniqueId.forEngine("ko-check")) }
+      }.When("call discover") { KtCheckEngine(it).discover(engineDiscoveryRequest, UniqueId.forEngine("ktcheck")) }
           .Then("it is EngineExecution") { _, desc ->
             when (desc) {
               is EngineExecution -> if (desc.allTests == tests) Assertion.success() else Assertion.fail(tests, desc.allTests)

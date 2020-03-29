@@ -9,7 +9,7 @@ plugins {
 
 val projectVersion: String by project
 
-group = "org.mikeneck.ko-check"
+group = "org.mikeneck.ktcheck"
 version = projectVersion
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
@@ -28,8 +28,8 @@ dependencies {
   }
   val kotlinVersion: String by project
   testImplementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
-  testImplementation(project(":ko-check-api"))
-  testImplementation(project(":ko-check-assertion"))
+  testImplementation(project(":ktcheck-api"))
+  testImplementation(project(":ktcheck-assertion"))
 }
 
 tasks.withType<Test> {

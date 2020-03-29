@@ -21,25 +21,25 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/.gradle/caches
-          key: gradle-${{ hashFiles('ko-check-api/build.gradle.kts') }}-${{ hashFiles('**/gradle-wrapper.properties') }}
+          key: gradle-${{ hashFiles('ktcheck-api/build.gradle.kts') }}-${{ hashFiles('**/gradle-wrapper.properties') }}
           restore-keys: gradle-
 
       - name: Run API Tests
-        run: ./gradlew clean ":ko-check-api:test"
+        run: ./gradlew clean ":ktcheck-api:test"
 
       - name: Store Reports of API Tests
         uses: actions/upload-artifact@v1
         if: always()
         with:
-          name: ko-check-api-test-reports
-          path: ko-check-api/build/reports/tests/test
+          name: ktcheck-api-test-reports
+          path: ktcheck-api/build/reports/tests/test
 
       - name: Run Assertion Tests
-        run: ./gradlew ":ko-check-assertion:test"
+        run: ./gradlew ":ktcheck-assertion:test"
 
       - name: Store Reports of Assertion Tests
         uses: actions/upload-artifact@v1
         if: always()
         with:
-          name: ko-check-assertion-test-reports
-          path: ko-check-assertion/build/reports/tests/test
+          name: ktcheck-assertion-test-reports
+          path: ktcheck-assertion/build/reports/tests/test
