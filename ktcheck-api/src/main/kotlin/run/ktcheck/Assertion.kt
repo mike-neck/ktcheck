@@ -10,11 +10,11 @@ interface Assertion {
 
   companion object {
 
-    fun success(): Assertion = Assertion.Success
+    fun success(): Assertion = Success
 
-    fun fail(expected: Any?, actual: Any?): Assertion = Assertion.ComparisonFailure(expected, actual)
+    fun fail(expected: Any?, actual: Any?): Assertion = ComparisonFailure(expected, actual)
 
-    fun fail(): Assertion = Assertion.Failure
+    fun fail(): Assertion = Failure
   }
 
   object Success: Assertion {
@@ -22,7 +22,7 @@ interface Assertion {
     override fun result(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): Unsuccessful? = null
 
     override fun toCheckResult(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult =
-        CheckResult.Companion.success(ktPropertyDescription, ktPropertyContext)
+        CheckResult.success(ktPropertyDescription, ktPropertyContext)
   }
 
   class ComparisonFailure(private val expected: Any?, private val actual: Any?): Assertion {
@@ -37,7 +37,7 @@ interface Assertion {
         original = AssertionFailedError("test failed - ${ktPropertyDescription.name}", expected, actual))
 
     override fun toCheckResult(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult =
-        CheckResult.Companion.failure(ktPropertyDescription, ktPropertyContext, result(ktPropertyDescription, ktPropertyContext))
+        CheckResult.failure(ktPropertyDescription, ktPropertyContext, result(ktPropertyDescription, ktPropertyContext))
   }
 
   object Failure: Assertion {
@@ -53,6 +53,6 @@ interface Assertion {
     )
 
     override fun toCheckResult(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult =
-        CheckResult.Companion.failure(ktPropertyDescription, ktPropertyContext, Assertion.Failure.result(ktPropertyDescription, ktPropertyContext))
+        CheckResult.failure(ktPropertyDescription, ktPropertyContext, result(ktPropertyDescription, ktPropertyContext))
   }
 }

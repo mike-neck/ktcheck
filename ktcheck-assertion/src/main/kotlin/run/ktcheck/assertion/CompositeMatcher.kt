@@ -11,7 +11,6 @@ interface CompositeMatcher<T>: Matcher<T> {
   val matchers: List<Matcher<T>>
 
   companion object {
-    fun <T> all(vararg matchers: Matcher<T>): CompositeMatcher<T> = CompositeMatcherImpl(listOf(*matchers))
 
     infix fun <T> Matcher<T>.and(matcher: Matcher<T>): CompositeMatcher<T> =
         when (this) {
