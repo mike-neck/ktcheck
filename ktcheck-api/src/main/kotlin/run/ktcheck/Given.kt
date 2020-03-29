@@ -10,6 +10,9 @@ class Given<C: Any, G: Any>(
   companion object {
     operator fun <G: Any> invoke(description: String, action: () -> G): Given<Unit, G> =
         Given(description, { Unit }, { Unit }, { action() })
+
+    operator fun <G: Any> invoke(action: () -> G): Given<Unit, G> =
+        Given("", action)
   }
 
   private val list: MutableList<KtProperty> = mutableListOf()
@@ -27,13 +30,19 @@ class Given<C: Any, G: Any>(
 
   private fun identity(): Int = ++identities[0]
 
+  @Suppress("FunctionName")
+  fun <W> When(action: C.(G) -> W): When<W> = When("", action)
+
   inner class When<W> (
-      private val description: String,
+      private val description: String = "",
       private val action: C.(G) -> W
   ) {
 
     @Suppress("FunctionName")
-    fun Then(description: String = "", action: C.(G, W) -> Assertion): Given<C, G> =
+    fun Then(action: C.(G, W) -> Assertion): Given<C, G> = Then("", action)
+
+    @Suppress("FunctionName")
+    fun Then(description: String, action: C.(G, W) -> Assertion): Given<C, G> =
         this@Given
             .apply { this@Given.list.add(PropertyGwtImpl(
                 object : KtPropertyDescription {

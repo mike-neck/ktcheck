@@ -30,6 +30,7 @@ dependencies {
   testImplementation(platform("org.jetbrains.kotlin:kotlin-bom:$kotlinVersion"))
   testImplementation(project(":ktcheck-api"))
   testImplementation(project(":ktcheck-assertion"))
+  testRuntimeOnly(project(":ktcheck-engine"))
 }
 
 tasks.withType<Test> {
