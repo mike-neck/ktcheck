@@ -23,16 +23,31 @@ val dokkaJar by tasks.registering(Jar::class) {
 }
 
 publishing {
-  repositories { 
-    maven {
-      name = "sonatype"
-      val sonatypeUrl: String by project
-      url = java.net.URI.create(sonatypeUrl)
-      val sonatypeUsername: String? by project
-      val sonatypePassword: String? by project
-      credentials { 
-        username = sonatypeUsername
-        password = sonatypePassword
+  repositories {
+    if (project.hasProperty("sonatypeUrl")) {
+      maven {
+        name = "sonatype"
+        val sonatypeUrl: String by project
+        url = uri(sonatypeUrl)
+        val sonatypeUsername: String? by project
+        val sonatypePassword: String? by project
+        credentials {
+          username = sonatypeUsername
+          password = sonatypePassword
+        }
+      }
+    }
+    if (project.hasProperty("githubPackageRepositoryUrl")) {
+      maven { 
+        name = "githubPackages"
+        val githubPackageUrl: String by project
+        url = uri(githubPackageUrl)
+        val githubUsername: String? by project
+        val githubToken: String? by project
+        credentials { 
+          username = githubUsername
+          password = githubToken
+        }
       }
     }
   }

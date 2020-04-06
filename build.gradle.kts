@@ -24,6 +24,14 @@ tasks.create("publishAll") {
   dependsOn(subProjectsPublish.toTypedArray())
 }
 
+tasks.create("publishGithubAll") {
+  group = "publish"
+  val subProjectsPublish = subprojects
+      .filter { it.name != "ktcheck-example" }
+      .map { "${it.name}:publishLibraryPublicationToGithubPackagesRepository" }
+  dependsOn(subProjectsPublish.toTypedArray())
+}
+
 tasks.create("publishLocalAll") {
   group = "publish"
   val subProjectsPublish = subprojects
