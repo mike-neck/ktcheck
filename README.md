@@ -114,7 +114,7 @@ by Given("TimeService with fixed clock", { TimeService(fixedClock) })
     .Then("it should be fixed time", expect(fixedInstant))
 ```
 
-### 4. Run test via JUnit Platform
+#### 4. Run test via JUnit Platform
 
 ```shell session
 $ ./mvnw test
