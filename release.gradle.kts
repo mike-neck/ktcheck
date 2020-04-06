@@ -1,9 +1,26 @@
+import org.gradle.api.tasks.bundling.Jar
+
 plugins.apply("maven-publish")
 
 fun Project.publishing(configure: PublishingExtension.() -> Unit): Unit =
     (this as ExtensionAware).extensions.configure("publishing", configure)
 val Project.publishing: PublishingExtension get() =
   (this as ExtensionAware).extensions.getByName("publishing") as PublishingExtension
+val Project.sourceSets: SourceSetContainer get() =
+  (this as ExtensionAware).extensions.getByName("sourceSets") as SourceSetContainer
+val SourceSetContainer.main: NamedDomainObjectProvider<SourceSet>
+  get() = named<SourceSet>("main")
+
+val sourcesJar by tasks.registering(Jar::class) {
+  archiveClassifier.set("sources")
+  from(sourceSets.main.get().allSource)
+}
+
+val dokkaTask by tasks.named("dokka")
+val dokkaJar by tasks.registering(Jar::class) {
+  archiveClassifier.set("javadoc")
+  from(dokkaTask)
+}
 
 publishing {
   repositories { 
@@ -21,6 +38,10 @@ publishing {
   }
   publications {
     create<MavenPublication>("library") {
+      from(components["kotlin"])
+      artifact(sourcesJar.get())
+      artifact(dokkaJar.get())
+
       pom { 
         description.set("Testing framework on JUnit Platform with Give-When-Then style.")
         url.set("https://github.com/mike-neck/ktcheck")
@@ -48,16 +69,16 @@ publishing {
   }
 }
 
-val publicKey: String? by project
 val privateKey: String? by project
-if (publicKey != null && privateKey != null) {
+val pgpPassword: String? by project
+if (privateKey != null && pgpPassword != null) {
   plugins.apply("signing")
 
   fun Project.signing(configure: SigningExtension.() -> Unit): Unit =
       (this as ExtensionAware).extensions.configure("signing", configure)
 
   signing {
-    useInMemoryPgpKeys(publicKey, privateKey)
+    useInMemoryPgpKeys(privateKey, pgpPassword)
     sign(publishing.publications["sonatype"])
   }
 }

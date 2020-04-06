@@ -3,17 +3,22 @@ import java.nio.file.Files
 
 plugins {
   kotlin("jvm") version "1.3.70"
+  id("org.jetbrains.dokka") version "0.10.1"
 }
 
-val projectVersion: String by project
+if (rootProject.hasProperty("sonatypeUrl")) {
+  project.apply("from" to rootProject.file("release.gradle.kts"))
+}
 
-group = "org.mikeneck.ktcheck"
-version = projectVersion
+group = rootProject.group
+version = rootProject.version
+
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
   mavenCentral()
+  jcenter()
 }
 
 dependencies {
@@ -58,4 +63,11 @@ task("serviceLoaderDescription") {
     }
     Files.write(path, "run.ktcheck.engine.KtCheckEngine".toByteArray())
   }
+}
+
+val TaskContainer.dokka: TaskProvider<org.jetbrains.dokka.gradle.DokkaTask>
+  get() = named<org.jetbrains.dokka.gradle.DokkaTask>("dokka")
+
+tasks.dokka {
+  subProjects = listOf("ktcheck-api")
 }

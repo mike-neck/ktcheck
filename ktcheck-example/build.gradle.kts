@@ -7,10 +7,9 @@ plugins {
   kotlin("plugin.spring") version "1.3.70"
 }
 
-val projectVersion: String by project
+group = rootProject.group
+version = rootProject.version
 
-group = "org.mikeneck.ktcheck"
-version = projectVersion
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 java.targetCompatibility = JavaVersion.VERSION_1_8
 

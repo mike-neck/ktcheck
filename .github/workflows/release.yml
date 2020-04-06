@@ -1,0 +1,45 @@
+name: publish to sonatype ossrh
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish-artifacts:
+    name: build and publish artifacts
+    runs-on: ubuntu:18.04
+    if: startsWith(github.ref, 'refs/tags/')
+    env:
+      REF: ${{ github.ref }}
+
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v1
+
+      -
+        name: Setup Java
+        uses: actions/setup-java@v1.3.0
+        with:
+          java-version: '8'
+
+      -
+        name: Cache Gradle
+        id: gradle
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: gradle-${{ hashFiles('ktcheck-api/build.gradle.kts') }}-${{ hashFiles('**/gradle-wrapper.properties') }}
+          restore-keys: gradle-
+
+      -
+        name: Publish All
+        run: |
+          ORG_GRADLE_PROJECT_KT_CHECK_VERSION=`echo "${REF}" | tr '/' ' ' | awk '{print $NF}'` \
+            ./gradlew publishAll
+        env:
+          ORG_GRADLE_PROJECT_privateKey: ${{ secrets.PGP_ARMORED_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_pgpPassword: ${{ secrets.PGP_PASS_PHREASE }}
+          ORG_GRADLE_PROJECT_sonatypeUrl: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+          ORG_GRADLE_PROJECT_sonatypeUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_sonatypePassword: ${{ secrets.SONATYPE_PASSWORD }}
