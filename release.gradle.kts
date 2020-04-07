@@ -94,7 +94,7 @@ if (privateKey != null && pgpPassword != null) {
 
   signing {
     useInMemoryPgpKeys(privateKey, pgpPassword)
-    sign(publishing.publications["sonatype"])
+    sign(publishing.publications["library"])
   }
 }
 
