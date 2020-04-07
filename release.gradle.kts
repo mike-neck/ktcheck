@@ -37,7 +37,7 @@ publishing {
         }
       }
     }
-    if (project.hasProperty("githubPackageRepositoryUrl")) {
+    if (project.hasProperty("githubPackageUrl")) {
       maven { 
         name = "githubPackages"
         val githubPackageUrl: String by project
