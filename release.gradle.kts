@@ -58,6 +58,8 @@ publishing {
       artifact(dokkaJar.get())
 
       pom { 
+        name.set(project.name)
+        packaging = "jar"
         description.set("Testing framework on JUnit Platform with Give-When-Then style.")
         url.set("https://github.com/mike-neck/ktcheck")
 
