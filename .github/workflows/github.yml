@@ -47,7 +47,7 @@ jobs:
         name: Dry run github release
         run: |
           ORG_GRADLE_PROJECT_KT_CHECK_VERSION=v0.1.0 \
-            ./gradlew publishGithubAll --dry-run
+            ./gradlew publishGithubAll
         env:
           ORG_GRADLE_PROJECT_privateKey: ${{ secrets.PGP_ARMORED_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_pgpPassword: ${{ secrets.PGP_PASS_PHREASE }}
