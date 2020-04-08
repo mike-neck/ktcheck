@@ -5,7 +5,7 @@ plugins {
   id("org.jetbrains.dokka") version "0.10.1"
 }
 
-if (rootProject.hasProperty("sonatypeUrl")) {
+if (rootProject.hasProperty("sonatypeUrl") || rootProject.hasProperty("githubPackageUrl")) {
   project.apply("from" to rootProject.file("release.gradle.kts"))
 }
 
