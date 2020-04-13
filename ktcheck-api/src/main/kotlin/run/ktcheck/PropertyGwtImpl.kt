@@ -9,7 +9,8 @@ class PropertyGwtImpl<C : Any, G : Any, W>(
     private val givenAction: C.() -> G,
     private val whenAction: C.(G) -> W,
     private val thenAssertion: C.(G, W) -> Assertion,
-    private val afterAction: C.(G) -> Unit,
+    private val afterAction: C.(G, Assertion) -> Unit,
+    private val finishAction: C.(Unsuccessful?) -> Unit,
     private val clock: Clock = Clock.systemUTC()
 ) : KtProperty, KtPropertyDescription by ktPropertyDescription {
 
@@ -27,7 +28,7 @@ class PropertyGwtImpl<C : Any, G : Any, W>(
   override fun perform(): CheckResult = perform(Instant.now(clock))
 
   private fun perform(start: Instant): CheckResult =
-      (ThrowableOnLeft(Either.right(Unit), unhandledException))("before") {
+      ThrowableOnLeft.initialContext("before", unhandledException) {
         GivenContext(Timer(start, clock), beforeAction())
       }("given") {
         it.accept(givenAction)
@@ -39,7 +40,8 @@ class PropertyGwtImpl<C : Any, G : Any, W>(
         it.accept(afterAction)
       }("finishing") {
         it.result(ktPropertyDescription)
-      }.rescue { it.toCheckResult(start) }
+      }.doFinally { unsuccessful -> value.finishAction(unsuccessful) }
+          .rescue { it.toCheckResult(start) }
 }
 
 private data class GivenContext<C : Any>(
@@ -79,8 +81,8 @@ private data class AfterContext<C : Any, G : Any, W>(
 
   private infix fun <T: Any> Unit.returns(t: T): T = this.let { t }
 
-  fun accept(afterAction: C.(G) -> Unit): FinishContext = 
-      baseContext.afterAction(given) returns FinishContext(
+  fun accept(afterAction: C.(G, Assertion) -> Unit): FinishContext = 
+      baseContext.afterAction(given, assertion) returns FinishContext(
           object : KtPropertyContext {
             override val timer: Timer get() = thenContext.whenContext.givenContext.timer
             override val given: Any get() = thenContext.given

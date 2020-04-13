@@ -15,24 +15,48 @@ private fun Throwable.throwOnOutOfMemoryError(): Throwable =
       else -> this
     }
 
-internal class ThrowableOnLeft<T: Any>(
-    private val either: Either<Throwable, T>,
-    private val throwable: (String, Throwable) -> Throwable) {
+internal class ThrowableOnLeft<C: Any, T: Any>(
+    private val initialContext: C?,
+    private val either: Either<Unsuccessful, T>,
+    private val throwable: (String, Throwable) -> Unsuccessful) {
 
-  fun <N: Any> map(mapping: (T) -> N): ThrowableOnLeft<N> = ThrowableOnLeft(either.map(mapping), this.throwable)
+  fun <N: Any> map(mapping: (T) -> N): ThrowableOnLeft<C, N> = ThrowableOnLeft(initialContext, either.map(mapping), this.throwable)
 
   operator fun <N: Any> invoke(
       description: String,
-      throwable: (String, Throwable) -> Throwable = this.throwable,
+      throwable: (String, Throwable) -> Unsuccessful = this.throwable,
       mapping: (T) -> N
-  ): ThrowableOnLeft<N> =
+  ): ThrowableOnLeft<C, N> =
       try {
         map(mapping)
       } catch (e: Throwable) {
         ThrowableOnLeft(
+            initialContext,
             Either.left(throwable(description, e.throwOnOutOfMemoryError())), 
             throwable)
       }
 
+  fun doFinally(action: C.(Unsuccessful?) -> Unit): Either<Unsuccessful, T> =
+      when (initialContext) {
+        null -> either
+        else -> when (either) {
+          is Left -> either.apply { initialContext.action(value) }
+          else -> either.apply { initialContext.action(null) }
+        }
+      }
+
   fun rescue(mapping: (Throwable) -> T): T = either.rescue(mapping)
+
+  companion object {
+    fun <T: Any> initialContext(description: String, throwable: (String, Throwable) -> Unsuccessful, initial: () -> T): ThrowableOnLeft<T, T> =
+        try {
+          initial().let { ThrowableOnLeft(it, Either.right(it), throwable) }
+        } catch (e: Throwable) {
+          ThrowableOnLeft(
+              null,
+              Either.left(throwable(description, e.throwOnOutOfMemoryError())),
+              throwable
+          )
+        }
+  }
 }

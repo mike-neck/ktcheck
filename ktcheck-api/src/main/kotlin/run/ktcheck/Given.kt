@@ -3,13 +3,14 @@ package run.ktcheck
 class Given<C: Any, G: Any>(
     private val description: String,
     private val before: () -> C,
-    private val after: C.(G) -> Unit = {},
+    private val after: C.(G, Assertion) -> Unit = { _, _ -> },
+    private val finish: C.(Unsuccessful?) -> Unit = {},
     private val action: C.() -> G
 ): KtCheck {
 
   companion object {
     operator fun <G: Any> invoke(description: String, action: () -> G): Given<Unit, G> =
-        Given(description, { Unit }, { Unit }, { action() })
+        Given(description, { Unit }, { _, _ -> Unit }, { Unit }, { action() })
 
     operator fun <G: Any> invoke(action: () -> G): Given<Unit, G> =
         Given("", action)
@@ -55,7 +56,8 @@ class Given<C: Any, G: Any>(
                 this@Given.action,
                 this@When.action,
                 action,
-                this@Given.after))
+                this@Given.after,
+                this@Given.finish))
             }
   }
 }
