@@ -4,6 +4,8 @@ import org.opentest4j.AssertionFailedError
 
 interface Assertion {
 
+  val isSuccess: Boolean get() = false
+
   fun result(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): Unsuccessful?
 
   fun toCheckResult(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): CheckResult
@@ -18,6 +20,8 @@ interface Assertion {
   }
 
   object Success: Assertion {
+
+    override val isSuccess: Boolean get() = true
 
     override fun result(ktPropertyDescription: KtPropertyDescription, ktPropertyContext: KtPropertyContext): Unsuccessful? = null
 

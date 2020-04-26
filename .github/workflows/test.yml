@@ -43,3 +43,13 @@ jobs:
         with:
           name: ktcheck-assertion-test-reports
           path: ktcheck-assertion/build/reports/tests/test
+
+      - name: Run Example Tests
+        run: ./gradlew "ktcheck-example:test" || true
+
+      - name: Store Reports of Example Tests
+        uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: ktcheck-example
+          path: ktcheck-example/build/reports/tests/test
