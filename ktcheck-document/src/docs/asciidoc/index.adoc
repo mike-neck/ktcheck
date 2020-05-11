@@ -1,0 +1,15 @@
+= ktcheck
+:toc: left
+
+== About
+
+Ktcheck is the testing framework for Kotlin programing language with GWT(Given, When, Then) style.
+The goal is to provide a definitive precondition(Given) and post-condition(Then) to the function under test.
+
+Ktcheck can run on https://junit.org/junit5/[JUnit Jupiter], and ktcheck provides the way to run standalone so that users can write a ktcheck test on any testing framework. 
+
+== Getting Started
+
+include::getting-started.adoc[]
+
+

@@ -5,3 +5,8 @@
 build
 
 .idea/
+
+ktcheck-document/src/docs/asciidoc/*.html
+ktcheck-document/src/docs/asciidoc/*.pdf
+ktcheck-document/src/docs/asciidoc/*.png
+ktcheck-document/src/docs/asciidoc/.asciidoctor
