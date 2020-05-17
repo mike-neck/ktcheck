@@ -2,11 +2,11 @@ package run.ktcheck.assertion
 
 import run.ktcheck.Assertion
 
-interface Matcher<T> {
+interface Matcher<in T> {
   fun perform(actual: T): Assertion
 }
 
-abstract class MatcherSupport<T>: Matcher<T> {
+abstract class MatcherSupport<in T>: Matcher<T> {
   override fun perform(actual: T): Assertion =
       if (matches(actual)) Assertion.success()
       else Assertion.fail(expectedValue, actual)
