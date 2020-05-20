@@ -1,21 +1,55 @@
 name: publish to sonatype ossrh
 
 on:
-  push:
-    tags:
-      - "v*"
+  pull_request:
+    types: [closed]
 
 jobs:
   publish-artifacts:
     name: build and publish artifacts
     runs-on: ubuntu-18.04
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith( github.event.pull_request.title , 'release/' ) && github.event.pull_request.merged
     env:
       REF: ${{ github.ref }}
 
     steps:
-      - name: Checkout Project
-        uses: actions/checkout@v1
+      -
+        name: Calculate release level
+        id: level
+        env:
+          RELEASE_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "::set-output name=value::$(echo ${RELEASE_TITLE} | cut -d '/' -f2)"
+
+      -
+        name: Checkout Project
+        uses: actions/checkout@v2
+
+      -
+        name: Current version
+        uses: actions-ecosystem/action-get-latest-tag@v1
+        id: current-version
+
+      -
+        name: "calculate next version (from: ${{ steps.current-version.outputs.tag }}, with-update: ${{ steps.level.outputs.value }})"
+        id: next-version
+        uses: actions-ecosystem/action-bump-semver@v1
+        with:
+          current_version: ${{ steps.current-version.outputs.tag }}
+          level: ${{ steps.level.outputs.value }}
+
+      -
+        name: push tag
+        uses: actions-ecosystem/action-push-tag@v1
+        with:
+          tag: ${{ steps.next-version.outputs.new_version }}
+          message: "Release version ${{ steps.next-version.outputs.new_version }}"
+
+      - name: project version
+        id: projectVersion
+        run: echo "::set-output name=version::$(echo $NEW_VERSION)"
+        env:
+          NEW_VERSION: ${{ steps.next-version.outputs.new_version }}
 
       -
         name: Setup Java
@@ -34,10 +68,9 @@ jobs:
 
       -
         name: Publish All
-        run: |
-          ORG_GRADLE_PROJECT_KT_CHECK_VERSION=`echo "${REF}" | tr '/' ' ' | awk '{print $NF}'` \
-            ./gradlew publishAll
+        run: ./gradlew publishAll
         env:
+          ORG_GRADLE_PROJECT_KT_CHECK_VERSION: ${{ steps.projectVersion.outputs.version }}
           ORG_GRADLE_PROJECT_privateKey: ${{ secrets.PGP_ARMORED_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_pgpPassword: ${{ secrets.PGP_PASS_PHREASE }}
           ORG_GRADLE_PROJECT_sonatypeUrl: "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
@@ -46,10 +79,9 @@ jobs:
 
       -
         name: Publish github
-        run: |
-          ORG_GRADLE_PROJECT_KT_CHECK_VERSION=`echo "${REF}" | tr '/' ' ' | awk '{print $NF}'` \
-            ./gradlew publishGithubAll
+        run: ./gradlew publishGithubAll
         env:
+          ORG_GRADLE_PROJECT_KT_CHECK_VERSION: ${{ steps.projectVersion.outputs.version }}
           ORG_GRADLE_PROJECT_privateKey: ${{ secrets.PGP_ARMORED_PRIVATE_KEY }}
           ORG_GRADLE_PROJECT_pgpPassword: ${{ secrets.PGP_PASS_PHREASE }}
           ORG_GRADLE_PROJECT_githubPackageUrl: "https://maven.pkg.github.com/mike-neck/ktcheck"
